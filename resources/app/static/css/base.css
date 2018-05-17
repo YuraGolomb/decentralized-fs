@@ -1,0 +1,28 @@
+
+* {
+  box-sizing:  border-box;
+}
+
+html, body {
+  background-color: #fff;
+  color: #333;
+  height: 100%;
+  margin: 0;
+  width: 100%;
+}
+
+.file-uploader-wrapper {
+  display: flex;
+}
+
+.file-uploader-wrapper .file-path {
+  width: 400px;
+  height: 20px;
+  line-height: 20px;
+}
+
+.file-uploader-wrapper .file-button {
+  width: 100px;
+  border: 1px solid black;
+  height: 20px;
+}
