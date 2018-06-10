@@ -1,10 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"time"
-	"encoding/json"
-	"server/messages"
+
+	"github.com/YuraGolomb/decentralized_fs/server/messages"
 
 	"github.com/asticode/go-astilectron"
 	"github.com/asticode/go-astilectron-bootstrap"
@@ -26,6 +27,7 @@ var (
 
 func main() {
 	// Init
+
 	flag.Parse()
 	astilog.FlagInit()
 
@@ -74,7 +76,7 @@ func main() {
 			}()
 			return nil
 		},
-		MessageHandler: handleMessages,
+		MessageHandler: messages.HandleMessages,
 		RestoreAssets:  RestoreAssets,
 		WindowOptions: &astilectron.WindowOptions{
 			BackgroundColor: astilectron.PtrStr("#333"),
@@ -83,6 +85,6 @@ func main() {
 			Width:           astilectron.PtrInt(900),
 		},
 	}); err != nil {
-		astilog.Fatal(errors.Wrap(err, "running bootstrap failed"))
+		astilog.Fatal(	)
 	}
 }

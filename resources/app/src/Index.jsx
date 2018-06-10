@@ -1,6 +1,7 @@
 import React from 'react';
 
 import FileUploader from './components/FileUploader.jsx';
+import FileDownloader from './components/FileDownloader.jsx';
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -58,6 +59,7 @@ export default class Index extends React.Component {
       <div>
         Here is React app!!
         <FileUploader />
+        <FileDownloader />
       </div>
     )
   }

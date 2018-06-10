@@ -10,36 +10,45 @@ import (
 	"github.com/asticode/go-astilog"
 
 	// "strconv"
-
+	"github.com/YuraGolomb/decentralized_fs/server/filehandler"
 	// "github.com/asticode/go-astichartjs"
 	"github.com/asticode/go-astilectron"
 	"github.com/asticode/go-astilectron-bootstrap"
 )
 
-// handleMessages handles messages
-func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload interface{}, err error) {
+// Message message
+type Message struct {
+	Path    string
+	KeyPath string
+}
+
+// HandleMessages handles messages
+func HandleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload interface{}, err error) {
+	var message Message
 	switch m.Name {
 	case "init":
 		w.OpenDevTools()
 
 		return
 	case "uploadFile":
-		// Unmarshal payload
-
-		var path string
 		if len(m.Payload) > 0 {
-			// Unmarshal payload
-			if err = json.Unmarshal(m.Payload, &path); err != nil {
+			if err = json.Unmarshal(m.Payload, &message); err != nil {
 				payload = err.Error()
 				return
 			}
 		}
-
-		// Explore
-		if payload, err = explore(path); err != nil {
-			payload = err.Error()
-			return
+		filehandler.EncodeFile(message.Path)
+		return
+	case "downloadFile":
+		if len(m.Payload) > 0 {
+			// Unmarshal payload
+			if err = json.Unmarshal(m.Payload, &message); err != nil {
+				payload = err.Error()
+				return
+			}
 		}
+		filehandler.DecodeFile(message.Path, message.KeyPath)
+		return
 	}
 	return
 }

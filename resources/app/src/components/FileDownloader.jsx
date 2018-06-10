@@ -7,7 +7,7 @@ class FileUploader extends Component {
 
     this.state = {
       path: '',
-      keyPath: '',
+      keyPath: ''
     }
 
     this.uploadFile = this.uploadFile.bind(this);
@@ -19,12 +19,8 @@ class FileUploader extends Component {
       return;
     }
     console.log(this.state.path);
-    console.log(JSON.stringify({
-      Path: this.state.path,
-      KeyPath: this.state.keyPath
-    }))
     const message = {
-      name: 'uploadFile',
+      name: 'downloadFile',
       payload: {
         Path: this.state.path,
         KeyPath: this.state.keyPath
@@ -32,7 +28,7 @@ class FileUploader extends Component {
       // payload: JSON.stringify({
       //   Path: this.state.path,
       //   KeyPath: this.state.keyPath
-      // }) + "",
+      // }),
     };
     astilectron.sendMessage(message, function(message) {
       console.log(message);
@@ -46,10 +42,12 @@ class FileUploader extends Component {
   render() {
     return (
       <div>
-        <div>File: </div>
+        <div>File:</div>
         <FileSelector onFilePathChanged={(p) => this.onFilePathChanged('path', p)}/>
+        <div>Key:</div>
+        <FileSelector onFilePathChanged={(p) => this.onFilePathChanged('keyPath', p)}/>
 
-        <div onClick={this.uploadFile}>UploadFile</div>
+        <div onClick={this.uploadFile}>DownloadFile</div>
       </div>
     );
   }
