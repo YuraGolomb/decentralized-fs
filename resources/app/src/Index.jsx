@@ -39,6 +39,10 @@ export default class Index extends React.Component {
     })
   }
 
+  changeSection(section) {
+    this.setState({ section })
+  }
+
   listen() {
     astilectron.onMessage(function(message) {
       switch (message.name) {
@@ -57,9 +61,15 @@ export default class Index extends React.Component {
   render() {
     return (
       <div>
-        Here is React app!!
-        <FileUploader />
-        <FileDownloader />
+        <h3>Select action</h3>
+        <div onClick={() => this.changeSection('upload')} className="button">Завантажити файл</div>
+        <div onClick={() => this.changeSection('download')} className="button">Вивантажити файл</div>
+        {
+          this.state.section === 'download' && <FileDownloader />
+        }
+        {
+          this.state.section === 'upload' && <FileUploader />
+        }
       </div>
     )
   }

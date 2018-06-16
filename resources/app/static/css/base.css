@@ -13,6 +13,7 @@ html, body {
 
 .file-uploader-wrapper {
   display: flex;
+  align-items: baseline;
 }
 
 .file-uploader-wrapper .file-path {
@@ -25,4 +26,49 @@ html, body {
   width: 100px;
   border: 1px solid black;
   height: 20px;
+}
+
+.text-input {
+  width: 400px;
+  border-radius: 20px;
+  padding: 6px 10px;
+  line-height: 17px;
+  height: 31px;
+}
+
+.button {
+  cursor: pointer;
+  border: none;
+  background: blue;
+  color: white;
+  border-radius: 200px;
+  letter-spacing: 0.7px;
+  padding: 6px 20px;
+  margin-top: 10px;
+  display: -webkit-inline-box;
+  margin-left: 10px;
+}
+.section {
+  margin-top: 20px;
+  padding: 20px;
+  border-top: 1px solid black;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 500;
+
+}
+
+.file-preview {
+  white-space: pre-wrap;
+  background: #eee;
+  border-radius: 20px;
+  box-shadow: 9px 9px 30px -2px black;
+  padding: 18px;
+}
+.h {
+  font-size: 18px;
+  font-weight: 600;
+  text-shadow: 1px 1px 0px rgba(128, 128, 128, 0.71);
 }

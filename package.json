@@ -5,19 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode development;astilectron-bundler -v; ./output/linux-amd64/fileStorage"
+    "build": "webpack --mode development;astilectron-bundler -v; ./output/linux-amd64/fileStorage",
+    "build-win": "webpack --mode development && astilectron-bundler -v && output\\windows-amd64\\fileStorage.exe"
   },
-  "repository": {
+  "repository": { 
     "type": "git",
     "url": "git+https://github.com/YuraGolomb/decentralized-fs.git"
   },
   "author": "",
   "license": "ISC",
   "babel": {
-  "presets": [
-    "env",
-    "react",
-    "stage-1"
+    "presets": [
+      "env",
+      "react",
+      "stage-1"
     ]
   },
   "bugs": {

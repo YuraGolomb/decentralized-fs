@@ -1,3 +1,13 @@
 {
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "files.exclude": {
+		"out": true,
+    "typings": false,
+    "bind_windows_amd64.go": true
+	},
+	"search.exclude": {
+		"**/node_modules": true,
+		"**/bower_components": true,
+		"out/": true
+	},
 }

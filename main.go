@@ -1,4 +1,4 @@
-package main
+﻿package main
 
 import (
 	"encoding/json"
@@ -14,77 +14,81 @@ import (
 )
 
 // Constants
-const htmlAbout = `Welcome on <b>Astilectron</b> demo!<br>
-This is using the bootstrap and the bundler.`
+const htmlAbout = `Ласаво просимо`
 
-// Vars
 var (
-	AppName string
 	BuiltAt string
-	debug   = flag.Bool("d", false, "enables the debug mode")
 	w       *astilectron.Window
+	AppName string
+	debug   = flag.Bool("d", false, "enables the debug mode")
 )
 
 func main() {
-	// Init
-
-	flag.Parse()
 	astilog.FlagInit()
-
-	// Run bootstrap
+	flag.Parse()
+	
 	astilog.Debugf("Running app built at %s", BuiltAt)
 	if err := bootstrap.Run(bootstrap.Options{
 		Asset:    Asset,
-		AssetDir: AssetDir,
 		AstilectronOptions: astilectron.Options{
 			AppName:            AppName,
-			AppIconDarwinPath:  "resources/icon.icns",
 			AppIconDefaultPath: "resources/icon.png",
+			AppIconDarwinPath:  "resources/icon.icns",
 		},
 		Debug:    true,
-		Homepage: "index.html",
+		AssetDir: AssetDir,
 		MenuOptions: []*astilectron.MenuItemOptions{{
 			Label: astilectron.PtrStr("File"),
 			SubMenu: []*astilectron.MenuItemOptions{
 				{
-					Label: astilectron.PtrStr("About"),
+					Label: astilectron.PtrStr("Abut"),
 					OnClick: func(e astilectron.Event) (deleteListener bool) {
 						if err := bootstrap.SendMessage(w, "about", htmlAbout, func(m *bootstrap.MessageIn) {
-							// Unmarshal payload
-							var s string
-							if err := json.Unmarshal(m.Payload, &s); err != nil {
-								astilog.Error(errors.Wrap(err, "unmarshaling payload failed"))
+							var ss string
+							if err := json.Unmarshal(m.Payload, &ss); err != nil {
+								astilog.Error(errors.Wrap(err, "split"))
 								return
 							}
-							astilog.Infof("About modal has been displayed and payload is %s!", s)
+							astilog.Infof("Window - %s!", ss)
 						}); err != nil {
-							astilog.Error(errors.Wrap(err, "sending about event failed"))
+							astilog.Error(errors.Wrap(err, "Err"))
 						}
+						return
+					},
+				},
+				{
+					Label: astilectron.PtrStr("ToggleDevTools"),
+					OnClick: func(e astilectron.Event) (deleteListener bool) {
+						w.OpenDevTools()
 						return
 					},
 				},
 				{Role: astilectron.MenuItemRoleClose},
 			},
 		}},
-		OnWait: func(_ *astilectron.Astilectron, iw *astilectron.Window, _ *astilectron.Menu, _ *astilectron.Tray, _ *astilectron.Menu) error {
-			w = iw
+		OnWait: func(_ *astilectron.Astilectron, wsІ []*astilectron.Window, _ *astilectron.Menu, _ *astilectron.Tray, _ *astilectron.Menu) error {
+			w = wsІ[0]
 			go func() {
-				time.Sleep(5 * time.Second)
+				time.Sleep(4 * time.Second)
 				if err := bootstrap.SendMessage(w, "check.out.menu", "Don't forget to check out the menu!"); err != nil {
 					astilog.Error(errors.Wrap(err, "sending check.out.menu event failed"))
 				}
 			}()
 			return nil
 		},
-		MessageHandler: messages.HandleMessages,
+		Windows: []*bootstrap.Window{{
+			MessageHandler: messages.HandleMessages,
+			Homepage:       "index.html",
+			Options: &astilectron.WindowOptions{
+				BackgroundColor: astilectron.PtrStr("#323"),
+				Height:          astilectron.PtrInt(800),
+				Center:          astilectron.PtrBool(true),
+				Width:           astilectron.PtrInt(800),
+			},
+		}},
 		RestoreAssets:  RestoreAssets,
-		WindowOptions: &astilectron.WindowOptions{
-			BackgroundColor: astilectron.PtrStr("#333"),
-			Center:          astilectron.PtrBool(true),
-			Height:          astilectron.PtrInt(900),
-			Width:           astilectron.PtrInt(900),
-		},
+		
 	}); err != nil {
-		astilog.Fatal(	)
+		astilog.Fatal("пОМИЛКА")
 	}
 }
