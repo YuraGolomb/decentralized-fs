@@ -15,7 +15,6 @@ import (
 
 // Constants
 const htmlAbout = `Ласаво просимо`
-
 var (
 	BuiltAt string
 	w       *astilectron.Window

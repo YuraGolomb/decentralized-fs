@@ -6,6 +6,10 @@ import (
 	"io"
 	"math/rand"
 	"os"
+	"path/filepath"
+	"strconv"
+
+	ipfsHandler "github.com/YuraGolomb/decentralized_fs/server/ipfsHandler"
 
 	"github.com/asticode/go-astilog"
 	"github.com/pkg/errors"
@@ -25,6 +29,7 @@ type FileDescriptor struct {
 
 // GetFileInfo fileinfo
 func GetFileInfo(path string) (fileDescription FileDescriptor, e error) {
+
 	buffer := make([]byte, bufferSize)
 	startFile, e := os.Open(path)
 
@@ -52,13 +57,14 @@ func GetFileInfo(path string) (fileDescription FileDescriptor, e error) {
 // DecodeFile uploads file
 func DecodeFile(path string, keyPath string) (e error) {
 	fmt.Println("Decoding file")
-	decryptedFile, e := os.Create(keyPath + ".dec")
+	rootDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	// filename := filepath.Base(keyPath)
+
 	if e != nil {
 		astilog.Error("error while crating .dec file")
 		astilog.Error(errors.Wrap(e, "error"))
 		return
 	}
-	defer decryptedFile.Close()
 
 	keyFile, e := os.Open(keyPath)
 	if e != nil {
@@ -69,6 +75,7 @@ func DecodeFile(path string, keyPath string) (e error) {
 	defer keyFile.Close()
 
 	reader := bufio.NewReader(keyFile)
+	nameS, e := reader.ReadString('\n')
 	keyS, e := reader.ReadString('\n')
 	if e != nil {
 		astilog.Error("error while reading .key file")
@@ -77,7 +84,12 @@ func DecodeFile(path string, keyPath string) (e error) {
 	}
 
 	key := []byte(keyS[:len(keyS)-2])
+	name := nameS[:len(nameS)-2]
 
+	decryptedFilePath := filepath.Join(rootDir, "../out", name)
+	decryptedFile, e := os.Create(decryptedFilePath)
+
+	defer decryptedFile.Close()
 	var pathes [32]string
 	for i := 0; i < 32; i++ {
 		line, err := reader.ReadString('\n')
@@ -86,7 +98,17 @@ func DecodeFile(path string, keyPath string) (e error) {
 			astilog.Error(errors.Wrap(e, "error"))
 			return err
 		}
-		pathes[i] = line[:len(line)-2]
+		name := filepath.Join(rootDir, "../tmp", strconv.FormatUint(uint64(i), 10)+".dec")
+		pathes[i] = name
+		e := ipfsHandler.Cat(line[:len(line)-2], name)
+		if err != nil {
+			fmt.Println("IPFS CAT ERR")
+			fmt.Println(e)
+			return err
+		}
+	}
+	for i := 0; i < 32; i++ {
+
 	}
 
 	decodingBuffer := CreateDecodingBuffer(pathes)
@@ -119,9 +141,17 @@ func EncodeFile(path string) (e error) {
 	fmt.Println("Encoding file")
 	key := randStringBytesRmndr(keySize)
 	buffer := make([]byte, bufferSize)
-	keyFile, e := os.Create(path + ".key")
+	rootDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	filename := filepath.Base(path)
+	keyFilePath := filepath.Join(rootDir, "../key", filename+".key")
+	encodedFilePath := filepath.Join(rootDir, "../tmp", filename+".sec")
+
 	initialFile, e := os.Open(path)
-	encodedFile, e := os.Create(path + ".sec")
+	fmt.Println(path)
+	keyFile, e := os.Create(keyFilePath)
+	fmt.Println(keyFilePath)
+	encodedFile, e := os.Create(encodedFilePath)
+	fmt.Println(encodedFilePath)
 
 	defer keyFile.Close()
 	defer initialFile.Close()
@@ -130,7 +160,9 @@ func EncodeFile(path string) (e error) {
 		astilog.Error(errors.Wrap(e, "error"))
 		return
 	}
+	fmt.Println("AFTER ERRRO")
 	// write key to file
+	_, e = keyFile.WriteString(string(filename) + "\r\n")
 	_, e = keyFile.WriteString(string(key) + "\r\n")
 	if e != nil {
 		astilog.Error(errors.Wrap(e, "error"))
@@ -170,16 +202,21 @@ func EncodeFile(path string) (e error) {
 		fmt.Println(e)
 		return
 	}
-	filePathes, e := fileSpliter(path + ".sec")
+	filePathes, e := fileSpliter(encodedFilePath, rootDir)
 	if e != nil {
 		fmt.Println(e)
 		return
 	}
 	for i := 0; i < 32; i++ {
-		_, e = keyFile.WriteString(filePathes[i] + "\r\n")
+		s, e := ipfsHandler.Add(filePathes[i])
 		if e != nil {
 			fmt.Println(e)
-			return
+			return e
+		}
+		_, e = keyFile.WriteString(s + "\r\n")
+		if e != nil {
+			fmt.Println(e)
+			return e
 		}
 	}
 	return nil

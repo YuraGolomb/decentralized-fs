@@ -3,12 +3,15 @@ package filehandler
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 )
 
-func fileSpliter(filepath string) (filenames [32]string, err error) {
+func fileSpliter(encFilepath string, rootDir string) (filenames [32]string, err error) {
 	const totalPartsNum int64 = 32
-	file, err := os.Open(filepath)
+	var repoPath = filepath.Join(rootDir, "../repo")
+	var encFileName = filepath.Base(encFilepath)
+	file, err := os.Open(encFilepath)
 	defer file.Close()
 
 	if err != nil {
@@ -33,16 +36,14 @@ func fileSpliter(filepath string) (filenames [32]string, err error) {
 		if e != nil {
 			fmt.Println(e)
 		}
-		fmt.Println("partBuffer")
-		fileName := filepath + "_" + strconv.FormatUint(uint64(i), 10) + ".part"
-		fmt.Println(fileName)
-		fmt.Println(partBuffer)
+		fileName := filepath.Join(repoPath, encFileName+"_"+strconv.FormatUint(uint64(i), 10)+".part")
 		endFile, err := os.Create(fileName)
 
 		if err != nil {
 			return filenames, err
 		}
 		endFile.Write(partBuffer)
+		endFile.Sync()
 		endFile.Close()
 		// ioutil.WriteFile(fileName, partBuffer, os.ModeAppend)
 		filenames[i] = fileName
